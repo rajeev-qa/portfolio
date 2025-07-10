@@ -1,112 +1,125 @@
 // Smooth scrolling and navigation
+const sections = document.querySelectorAll('section');
 document.addEventListener('DOMContentLoaded', function() {
-    // Navigation functionality
-    const navbar = document.querySelector('.navbar');
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
-    const backToTop = document.getElementById('backToTop');
+    try {
+        // Navigation functionality
+        const navbar = document.querySelector('.navbar');
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const backToTop = document.getElementById('backToTop');
+        const typingText = document.querySelector('.typing-text');
 
-    // Mobile menu toggle
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-
-    // Close mobile menu when clicking on a link
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
-
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 100) {
-            navbar.classList.add('scrolled');
-            backToTop.classList.add('visible');
-        } else {
-            navbar.classList.remove('scrolled');
-            backToTop.classList.remove('visible');
+        // Ensure all required elements are present
+        if (!navbar || !hamburger || !navMenu || !navLinks.length) {
+            console.error('Required navigation elements not found');
+            return;
         }
-    });
 
-    // Back to top functionality
-    backToTop.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+        // Mobile menu toggle
+        hamburger?.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
         });
-    });
 
-    // Active navigation link
-    const sections = document.querySelectorAll('section');
-    const observerOptions = {
-        threshold: 0.3,
-        rootMargin: '-100px 0px -100px 0px'
-    };
+        // Close mobile menu when clicking on a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${id}`) {
-                        link.classList.add('active');
-                    }
-                });
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+                backToTop?.classList.add('visible');
+            } else {
+                navbar.classList.remove('scrolled');
+                backToTop?.classList.remove('visible');
             }
         });
-    }, observerOptions);
 
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+        // Back to top functionality
+        backToTop?.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
 
-    // Typing animation
-    const typingText = document.querySelector('.typing-text');
-    const titles = [
-        'Software QA Engineer',
-        'Manual Testing Expert',
-        'Automation Specialist',
-        'API Testing Professional',
-        'Performance Testing Expert',
-        'Security Testing Analyst'
-    ];
-    
-    let titleIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
+        // Active navigation link
+        if (sections.length > 0) {
+            const observerOptions = {
+                threshold: 0.3,
+                rootMargin: '-100px 0px -100px 0px'
+            };
 
-    function typeWriter() {
-        const currentTitle = titles[titleIndex];
-        
-        if (isDeleting) {
-            typingText.textContent = currentTitle.substring(0, charIndex - 1);
-            charIndex--;
-        } else {
-            typingText.textContent = currentTitle.substring(0, charIndex + 1);
-            charIndex++;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         }
 
-        let typeSpeed = isDeleting ? 50 : 100;
+        // Typing animation
+        if (typingText) {
+            const titles = [
+                'Software QA Engineer',
+                'Manual Testing Expert',
+                'Automation Specialist',
+                'API Testing Professional',
+                'Performance Testing Expert',
+                'Security Testing Analyst'
+            ];
+            
+            let titleIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
 
-        if (!isDeleting && charIndex === currentTitle.length) {
-            typeSpeed = 2000;
-            isDeleting = true;
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            titleIndex = (titleIndex + 1) % titles.length;
-            typeSpeed = 500;
+            function typeWriter() {
+                const currentTitle = titles[titleIndex];
+                
+                if (isDeleting) {
+                    typingText.textContent = currentTitle.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typingText.textContent = currentTitle.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                let typeSpeed = isDeleting ? 50 : 100;
+
+                if (!isDeleting && charIndex === currentTitle.length) {
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    titleIndex = (titleIndex + 1) % titles.length;
+                }
+
+                setTimeout(typeWriter, typeSpeed);
+            }
+
+            // Start the typing animation
+            typeWriter();
         }
-
-        setTimeout(typeWriter, typeSpeed);
+    } catch (error) {
+        console.error('Error initializing portfolio scripts:', error);
     }
-
-    // Start typing animation after a delay
-    setTimeout(typeWriter, 2000);
 
     // Counter animation
     function animateCounters() {
@@ -391,4 +404,45 @@ document.addEventListener('DOMContentLoaded', function() {
         item.style.cursor = 'pointer';
         item.title = 'Click to copy';
     });
+
+    // Animated Counters for stats and achievements (trigger on scroll)
+    function animateCounter(element, target, duration = 2000, isFloat = false) {
+        let start = 0;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            let value = isFloat
+                ? (progress * (target - start) + start).toFixed(1)
+                : Math.floor(progress * (target - start) + start);
+            element.textContent = value;
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                element.textContent = isFloat ? target.toFixed(1) : target;
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function setupCounterAnimation(selector) {
+        const elements = document.querySelectorAll(selector);
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    const el = entry.target;
+                    const target = parseFloat(el.getAttribute('data-target'));
+                    const isFloat = el.getAttribute('data-target').includes('.') || el.textContent.includes('%');
+                    animateCounter(el, target, 2000, isFloat);
+                    el.dataset.animated = 'true';
+                    obs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        elements.forEach(el => observer.observe(el));
+    }
+
+    // Animate .stat-number and .counter when visible
+    setupCounterAnimation('.stat-number');
+    setupCounterAnimation('.counter');
 });
